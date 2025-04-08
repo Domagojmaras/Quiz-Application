@@ -4,12 +4,16 @@ const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST'],
+    allowedHeaders: ['Content-Type']
+}));
 app.use(express.json());
-app.use(express.static('.')); // Serve static files from current directory
+app.use(express.static(path.join(__dirname))); // Serve static files from current directory
 
 // Database setup
 const db = new sqlite3.Database('quiz.db', (err) => {
@@ -37,6 +41,7 @@ app.post('/api/scores', (req, res) => {
 
     db.run('INSERT INTO scores (username, score) VALUES (?, ?)', [username, score], function(err) {
         if (err) {
+            console.error('Database error:', err);
             return res.status(500).json({ error: 'Failed to save score' });
         }
         res.json({ id: this.lastID, username, score });
@@ -46,6 +51,7 @@ app.post('/api/scores', (req, res) => {
 app.get('/api/scores', (req, res) => {
     db.all('SELECT * FROM scores ORDER BY score DESC, date DESC LIMIT 10', [], (err, rows) => {
         if (err) {
+            console.error('Database error:', err);
             return res.status(500).json({ error: 'Failed to fetch scores' });
         }
         res.json(rows);
@@ -55,6 +61,12 @@ app.get('/api/scores', (req, res) => {
 // Serve the main page
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Something went wrong!' });
 });
 
 // Start server
