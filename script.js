@@ -41,8 +41,12 @@ async function updateLeaderboard() {
     try {
         console.log('Fetching leaderboard...');
         const response = await fetch('/api/scores');
+        console.log('Response status:', response.status);
+        
         if (!response.ok) {
-            throw new Error('Failed to fetch leaderboard');
+            const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+            console.error('Server error:', errorData);
+            throw new Error(`Failed to fetch leaderboard: ${errorData.error || response.statusText}`);
         }
         
         const scores = await response.json();
@@ -85,7 +89,7 @@ async function updateLeaderboard() {
         console.error('Error updating leaderboard:', error);
         const leaderboardList = document.getElementById('leaderboard-list');
         if (leaderboardList) {
-            leaderboardList.innerHTML = '<li>Error loading leaderboard. Please try again later.</li>';
+            leaderboardList.innerHTML = `<li class="error-message">Error loading leaderboard: ${error.message}</li>`;
         }
     }
 }
