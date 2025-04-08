@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const sqlite3 = require('sqlite3').verbose();
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -22,7 +23,15 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname))); // Serve static files from current directory
 
 // Database setup
-const db = new sqlite3.Database('quiz.db', (err) => {
+const dbPath = path.join(__dirname, 'quiz.db');
+console.log('Database path:', dbPath);
+
+// Check if database file exists
+if (!fs.existsSync(dbPath)) {
+    console.log('Database file does not exist, creating new database...');
+}
+
+const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
         console.error('Error opening database:', err);
     } else {
@@ -33,7 +42,13 @@ const db = new sqlite3.Database('quiz.db', (err) => {
             username TEXT NOT NULL,
             score INTEGER NOT NULL,
             date DATETIME DEFAULT CURRENT_TIMESTAMP
-        )`);
+        )`, (err) => {
+            if (err) {
+                console.error('Error creating table:', err);
+            } else {
+                console.log('Scores table created or already exists');
+            }
+        });
     }
 });
 
