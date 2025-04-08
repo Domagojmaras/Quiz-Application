@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modern Quiz App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div id="start-screen" class="screen active">
+            <h1>Welcome to the Quiz!</h1>
+            <div class="username-container">
+                <input type="text" id="username-input" placeholder="Enter your name" maxlength="20">
+                <p class="error-message" id="username-error"></p>
+            </div>
+            <button id="start-btn" class="btn pulse">Start Quiz</button>
+        </div>
+
+        <div id="quiz-screen" class="screen">
+            <div class="quiz-header">
+                <h2 id="question">Question text</h2>
+                <div class="progress-dots">
+                    <div class="dot active"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                    <div class="dot"></div>
+                </div>
+            </div>
+            
+            <div id="answers" class="answer-grid">
+                <button class="answer-btn" data-index="0">A. </button>
+                <button class="answer-btn" data-index="1">B. </button>
+                <button class="answer-btn" data-index="2">C. </button>
+                <button class="answer-btn" data-index="3">D. </button>
+            </div>
+        </div>
+
+        <div id="result-screen" class="screen">
+            <h2>Quiz Complete!</h2>
+            <p class="username-display">Well done, <span id="result-username">Player</span>!</p>
+            <div class="result-container">
+                <div class="score-circle">
+                    <span id="score">0</span>/5
+                </div>
+                <p id="result-message">Great job!</p>
+                <a href="#leaderboard" id="leaderboard-link" class="leaderboard-link">View Leaderboard</a>
+            </div>
+            <button id="restart-btn" class="btn">Try Again</button>
+        </div>
+
+        <div id="leaderboard" class="leaderboard">
+            <h3>🏆 Top 10 Champions</h3>
+            <ul class="leaderboard-list" id="leaderboard-list">
+                <!-- Leaderboard entries will be added here -->
+            </ul>
+            <button class="btn" onclick="hideLeaderboard()">Close</button>
+        </div>
+    </div>
+    <script src="questions.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 
