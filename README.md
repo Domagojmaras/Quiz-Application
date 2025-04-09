@@ -46,15 +46,53 @@ npm install
 
 ## Running the Application
 
-1. Start the server:
+### Local Development
+```bash
+npm run dev
+```
+This will start the server with nodemon for automatic reloading during development.
+
+### Production
 ```bash
 npm start
 ```
 
-2. Open your web browser and navigate to:
+The application will be available at:
 ```
 http://localhost:3000
 ```
+
+## Hosting Instructions
+
+### 1. Choose a Hosting Provider
+The application can be hosted on any platform that supports Node.js, such as:
+- Heroku
+- DigitalOcean
+- AWS
+- Google Cloud Platform
+- Vercel
+- Railway
+
+### 2. Environment Setup
+- Set the `PORT` environment variable (most platforms will do this automatically)
+- Ensure the platform has Node.js v14 or higher installed
+
+### 3. Database
+- The application uses SQLite, which is file-based
+- Make sure your hosting platform supports persistent storage
+- The database file will be created automatically at `quiz.db`
+
+### 4. Deployment Steps
+1. Push your code to the hosting platform
+2. Install dependencies: `npm install`
+3. Start the application: `npm start`
+
+### 5. Health Check
+The application includes a health check endpoint:
+```
+GET /health
+```
+This can be used to verify the server is running correctly.
 
 ## How to Play
 
@@ -69,9 +107,11 @@ http://localhost:3000
 
 - Frontend: HTML, CSS, JavaScript
 - Backend: Node.js with Express
+- Database: SQLite
 - Dependencies:
   - express: ^4.18.2
   - cors: ^2.8.5
+  - sqlite3: ^5.1.7
 
 ## Contributing
 

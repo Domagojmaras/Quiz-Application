@@ -20,11 +20,19 @@ app.use(cors({
     allowedHeaders: ['Content-Type']
 }));
 app.use(express.json());
-app.use(express.static(path.join(__dirname))); // Serve static files from current directory
+
+// Serve static files from the current directory
+app.use(express.static(path.join(__dirname)));
 
 // Database setup
 const dbPath = path.join(__dirname, 'quiz.db');
 console.log('Database path:', dbPath);
+
+// Ensure the database directory exists
+const dbDir = path.dirname(dbPath);
+if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+}
 
 // Check if database file exists
 if (!fs.existsSync(dbPath)) {
@@ -50,6 +58,11 @@ const db = new sqlite3.Database(dbPath, (err) => {
             }
         });
     }
+});
+
+// Health check endpoint
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
 // API Routes
@@ -95,10 +108,32 @@ app.use((err, req, res, next) => {
     res.status(500).json({ error: 'Something went wrong!' });
 });
 
+// Handle 404 errors
+app.use((req, res) => {
+    res.status(404).json({ error: 'Not found' });
+});
+
 // Start server
-app.listen(port, () => {
+const server = app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);
     console.log(`API endpoints available at:`);
     console.log(`  GET  http://localhost:${port}/api/scores`);
     console.log(`  POST http://localhost:${port}/api/scores`);
+    console.log(`  GET  http://localhost:${port}/health`);
+});
+
+// Handle server shutdown gracefully
+process.on('SIGTERM', () => {
+    console.log('SIGTERM signal received. Closing server...');
+    server.close(() => {
+        console.log('Server closed');
+        db.close((err) => {
+            if (err) {
+                console.error('Error closing database:', err);
+            } else {
+                console.log('Database connection closed');
+            }
+            process.exit(0);
+        });
+    });
 }); 
