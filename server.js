@@ -95,12 +95,28 @@ app.post('/api/scores', (req, res) => {
 
 app.get('/api/scores', (req, res) => {
     console.log('Received GET request to /api/scores');
+    console.log('Request headers:', req.headers);
+    console.log('Request query:', req.query);
+    
     db.all('SELECT * FROM scores ORDER BY score DESC, date DESC LIMIT 10', [], (err, rows) => {
         if (err) {
             console.error('Database error:', err);
-            return res.status(500).json({ error: 'Failed to fetch scores', details: err.message });
+            return res.status(500).json({ 
+                error: 'Failed to fetch scores', 
+                details: err.message,
+                stack: err.stack 
+            });
         }
+        
+        // Log the response before sending
         console.log('Returning scores:', rows);
+        console.log('Response headers:', {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+        });
+        
+        res.setHeader('Content-Type', 'application/json');
+        res.setHeader('Access-Control-Allow-Origin', '*');
         res.json(rows);
     });
 });

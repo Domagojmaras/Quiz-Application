@@ -40,8 +40,16 @@ function validateUsername() {
 async function updateLeaderboard() {
     try {
         console.log('Fetching leaderboard...');
-        const response = await fetch('/api/scores');
+        const response = await fetch('/api/scores', {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+        
         console.log('Response status:', response.status);
+        console.log('Response headers:', Object.fromEntries(response.headers.entries()));
         
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
