@@ -46,7 +46,7 @@ async function updateLeaderboard() {
         if (!response.ok) {
             const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
             console.error('Server error:', errorData);
-            throw new Error(`Failed to fetch leaderboard: ${errorData.error || response.statusText}`);
+            throw new Error(`Failed to fetch leaderboard: ${errorData.error || response.statusText}${errorData.details ? ` - ${errorData.details}` : ''}`);
         }
         
         const scores = await response.json();

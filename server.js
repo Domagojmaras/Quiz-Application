@@ -55,6 +55,14 @@ const db = new sqlite3.Database(dbPath, (err) => {
                 console.error('Error creating table:', err);
             } else {
                 console.log('Scores table created or already exists');
+                // Test the database connection
+                db.get('SELECT 1', (err, row) => {
+                    if (err) {
+                        console.error('Database test query failed:', err);
+                    } else {
+                        console.log('Database test query successful');
+                    }
+                });
             }
         });
     }
@@ -78,7 +86,7 @@ app.post('/api/scores', (req, res) => {
     db.run('INSERT INTO scores (username, score) VALUES (?, ?)', [username, score], function(err) {
         if (err) {
             console.error('Database error:', err);
-            return res.status(500).json({ error: 'Failed to save score' });
+            return res.status(500).json({ error: 'Failed to save score', details: err.message });
         }
         console.log('Score saved successfully:', { id: this.lastID, username, score });
         res.json({ id: this.lastID, username, score });
@@ -90,7 +98,7 @@ app.get('/api/scores', (req, res) => {
     db.all('SELECT * FROM scores ORDER BY score DESC, date DESC LIMIT 10', [], (err, rows) => {
         if (err) {
             console.error('Database error:', err);
-            return res.status(500).json({ error: 'Failed to fetch scores' });
+            return res.status(500).json({ error: 'Failed to fetch scores', details: err.message });
         }
         console.log('Returning scores:', rows);
         res.json(rows);
@@ -105,7 +113,7 @@ app.get('/', (req, res) => {
 // Error handling middleware
 app.use((err, req, res, next) => {
     console.error('Error occurred:', err.stack);
-    res.status(500).json({ error: 'Something went wrong!' });
+    res.status(500).json({ error: 'Something went wrong!', details: err.message });
 });
 
 // Handle 404 errors
